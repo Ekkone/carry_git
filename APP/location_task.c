@@ -10,17 +10,64 @@
 
 /* External variables --------------------------------------------------------*/
 
-/* Internal variables --------------------------------------------------------*/
+/*
+                                           
+	  `''```''```''```''```''```''```''`````  
+		`                           :``:.    '
+		`                         ''    .'.  '
+		`                         `.QTI1 ''  '
+		`     '`'':               '`     ''  '³µÍ·
+		`   `'     ''              `!;:!;.   '
+		`   ``QTI2 ``                        '
+		`   `'     ''                        '
+		`     '!||:                          '
+		``''```''```''```''```''```''```''```` 
+*/
 
+/* Internal variables --------------------------------------------------------*/
+enum car_state Car_State; 
+float x_now = 0;
+float y_now = 0;
+float Qti1_flag = Wihte;
+float Qti2_flag = Wihte;
 /* Private function prototypes -----------------------------------------------*/
 
 void Location_Task(void const * argument)
 {
   for(;;)
   {
-//    HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_14);
-    
-    osDelay(500);
+		Car_State = x_pos;
+		switch(Car_State)
+		{
+			case x_pos:
+								{
+									if(Black == QTI1)
+									{
+										x_now += 0.5;
+									}
+								}
+			break;
+			case x_nag:
+								{
+								
+								
+								}
+			break;
+			case y_pos:
+								{
+								
+								}
+			break;
+			case y_nag:
+								{
+								
+								}
+			break;
+			default: ;
+		}
+
+		
+    osDelay(5);
   }
 }
 

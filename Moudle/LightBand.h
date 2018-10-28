@@ -7,7 +7,7 @@
 struct	lightband
 {
 	uint8_t   id;
-	uint8_t 	site;
+	float 		site;
 	uint8_t 	distance;
 	uint8_t 	direction;
 

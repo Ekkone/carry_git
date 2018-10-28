@@ -464,7 +464,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     HAL_UART_Receive_IT(&huart4,&Laser_buff,1);
     
  }
-  else if(huart->Instance == UART5)  //激光测距接收中断
+  else if(huart->Instance == UART5)  //二维码
   {
     if(QR_Buff[0] == 0x02 && QR_Buff[1] == 0x00 && QR_Buff[2] == 0x00 && QR_Buff[3] == 0x01 &&\
        QR_Buff[4] == 0x00 && QR_Buff[5] == 0x33 && QR_Buff[6] == 0x31)

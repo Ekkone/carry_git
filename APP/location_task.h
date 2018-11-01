@@ -31,11 +31,9 @@ enum car_state
 #define	Wihte			GPIO_PIN_RESET										 //¡Ÿ ±
 
 
-extern enum car_state Car_State; 
-extern float x_now;
-extern float y_now;
-extern float Qti1_flag;
-extern float Qti2_flag;
+
+
+
 
 void Location_Task(void const * argument);
 

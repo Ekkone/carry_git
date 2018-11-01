@@ -26,8 +26,8 @@
 
 /* Internal variables --------------------------------------------------------*/
 enum car_state Car_State; 
-float x_now = 0;
-float y_now = 0;
+float now_x = 0;
+float now_y = 0;
 float Qti1_flag = Wihte;
 float Qti2_flag = Wihte;
 /* Private function prototypes -----------------------------------------------*/
@@ -43,7 +43,7 @@ void Location_Task(void const * argument)
 								{
 									if(Black == QTI1)
 									{
-										x_now += 0.5;
+										now_x += 0.5;
 									}
 								}
 			break;

@@ -521,7 +521,7 @@ void HAL_CAN_RxFifo0FullCallback(CAN_HandleTypeDef *hcan)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
   /* USER CODE BEGIN Callback 0 */
-  int16_t motor_count;
+  
   /* USER CODE END Callback 0 */
   if (htim->Instance == TIM1) {
 

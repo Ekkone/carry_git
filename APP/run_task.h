@@ -28,8 +28,8 @@ typedef struct
 } GM_25_type;
 
 
-extern uint8_t now_x;
-extern uint8_t now_y;
+extern float now_x;
+extern float now_y;
 
 void Run_Task(void const * argument);
 void Chassis_pid_init(void);
@@ -37,8 +37,8 @@ void Chassis_pid_init(void);
 extern GM_25_type GM_25;
 extern GM_25_type GM_25_spd_set;
 extern int16_t motor_count[4];//电机编码器计数
-extern uint8_t  goal_x[7];
-extern uint8_t  goal_y[7];      //生成的七个目标点的坐标顺序
+extern float  goal_x[7];
+extern float  goal_y[7];      //生成的七个目标点的坐标顺序
 
 uint8_t Move_to(uint8_t num,uint8_t direction,uint16_t speed);
 

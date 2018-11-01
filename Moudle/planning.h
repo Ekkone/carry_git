@@ -12,23 +12,23 @@
 #define GREEN      2
 #define BLUE       3
 
-#define POS1_X     100
-#define POS1_Y     10
+#define POS1_X     3.5f
+#define POS1_Y     1
 
-#define POS2_X     200
-#define POS2_Y     10
+#define POS2_X     4
+#define POS2_Y     1
 
-#define POS3_X     300
-#define POS3_Y     10
+#define POS3_X     4.5f
+#define POS3_Y     1
 
-#define RED_X      100
-#define RED_Y      100
+#define RED_X      3
+#define RED_Y      2.5f
 
-#define GREEN_X    100
-#define GREEN_Y    100
+#define GREEN_X    4
+#define GREEN_Y    2.5f
 
-#define BLUE_X     100
-#define BLUE_Y     100
+#define BLUE_X     5
+#define BLUE_Y     2.5f
 
 #define BEGIN_X    5
 #define BEGIN_Y    5

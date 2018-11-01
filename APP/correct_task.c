@@ -9,7 +9,7 @@
 #include "correct_task.h"
 
 /* External variables --------------------------------------------------------*/
-
+extern CAN_RX LightBand_Rx;
 /* Internal variables --------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
@@ -18,7 +18,7 @@ void Correct_Task(void const * argument)
 {
   for(;;)
   {
-    HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_14);
+    
     
     osDelay(500);
   }

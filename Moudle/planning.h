@@ -39,7 +39,7 @@ typedef struct
 	float          y1;
 	float          x2;
 	float          y2;
-	uint8_t  color;
+	uint8_t     color;
 }way;
 
 typedef struct

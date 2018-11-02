@@ -37,11 +37,14 @@
 #include "cmsis_os.h"
 
 /* USER CODE BEGIN 0 */
+#include "location_task.h"
 #include "Motor_USE_TIM.h"
 #include "Pixy_Camera.h"
 #include "LightBand.h"
-#include "AX-12A.h"
+#include "cmsis_os.h"
 #include "QR_Code.h"
+#include "AX-12A.h"
+
 /*Pixy变量*/
 uint8_t Re_Counter = 0;
 uint8_t ReSign_OK = 0;
@@ -53,6 +56,13 @@ uint8_t Laser_buff = 0;    //缓存
 
 /*二维码变量*/
 uint8_t QR_Buff[11] = {0};
+
+/*任务通知使用任务句柄*/
+//osThreadId correct_taskHandle;
+//osThreadId decision_taskHandle;
+//osThreadId test_taskHandle;
+//osThreadId display_taskHandle;
+extern osThreadId location_taskHandle;
 
 /* USER CODE END 0 */
 
@@ -66,6 +76,7 @@ extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
+extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim8;
 extern TIM_HandleTypeDef htim9;
 
@@ -182,7 +193,7 @@ void DebugMon_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-  HAL_IncTick();
+	
   /* USER CODE END SysTick_IRQn 0 */
   osSystickHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
@@ -200,6 +211,36 @@ void SysTick_Handler(void)
 /**
 * @brief This function handles TIM1 update interrupt and TIM10 global interrupt.
 */
+
+/**
+* @brief This function handles EXTI line1 interrupt.
+*/
+void EXTI1_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI1_IRQn 0 */
+
+  /* USER CODE END EXTI1_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_1);
+  /* USER CODE BEGIN EXTI1_IRQn 1 */
+
+  /* USER CODE END EXTI1_IRQn 1 */
+}
+
+/**
+* @brief This function handles EXTI line2 interrupt.
+*/
+void EXTI2_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI2_IRQn 0 */
+
+  /* USER CODE END EXTI2_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_2);
+  /* USER CODE BEGIN EXTI2_IRQn 1 */
+
+  /* USER CODE END EXTI2_IRQn 1 */
+}
+
+
 void TIM1_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
@@ -244,6 +285,32 @@ void TIM4_IRQHandler(void)
   /* USER CODE BEGIN TIM4_IRQn 1 */
 
   /* USER CODE END TIM4_IRQn 1 */
+}
+
+void TIM5_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM5_IRQn 0 */
+
+  /* USER CODE END TIM5_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim5);
+  /* USER CODE BEGIN TIM5_IRQn 1 */
+
+  /* USER CODE END TIM5_IRQn 1 */
+}
+
+
+/**
+* @brief This function handles TIM7 global interrupt.
+*/
+void TIM7_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM7_IRQn 0 */
+
+  /* USER CODE END TIM7_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim7);
+  /* USER CODE BEGIN TIM7_IRQn 1 */
+
+  /* USER CODE END TIM7_IRQn 1 */
 }
 
 void TIM9_IRQHandler(void)
@@ -477,7 +544,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     {
       Get_QRcode();
     }
-      HAL_UART_Receive_IT(&huart4,QR_Buff,11);      
+      HAL_UART_Receive_IT(&huart5,QR_Buff,11);      
   }
   
    
@@ -523,13 +590,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
   
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM1) {
+  if (htim->Instance == TIM7) 
+	{
+		
+		HAL_IncTick();
 
   }
   /* USER CODE BEGIN Callback 1 */
-
-	
-
 	if(htim->Instance == TIM5)
 	{
 		
@@ -543,6 +610,31 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		
 	}
   /* USER CODE END Callback 1 */
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+	BaseType_t pxHigherPriorityTaskWoken;
+	if(GPIO_Pin == GPIO_PIN_1)
+	{
+		Qti1_flag[4] = Qti1_flag[3];
+		Qti1_flag[3] = Qti1_flag[2];
+		Qti1_flag[2] = Qti1_flag[1];
+		Qti1_flag[1] = Qti1_flag[0];
+		Qti1_flag[0] = QTI1;
+	}
+	else if(GPIO_Pin == GPIO_PIN_2)
+	{
+		Qti2_flag[4] = Qti2_flag[3];
+		Qti2_flag[3] = Qti2_flag[2];
+		Qti2_flag[2] = Qti2_flag[1];
+		Qti2_flag[1] = Qti2_flag[0];
+		Qti2_flag[0] = QTI2;
+	}
+	//发送定位任务的任务通知
+	vTaskNotifyGiveFromISR(location_taskHandle,&pxHigherPriorityTaskWoken);
+	//进行任务切换
+	portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
 }
 
 /* USER CODE END 1 */

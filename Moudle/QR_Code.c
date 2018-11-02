@@ -17,4 +17,5 @@ void Get_QRcode(void)
 {
   static uint8_t message[9] = {0x7E,0x00,0x08,0x01,0x00,0x02,0x01,0xAB,0xCD};//¥•∑¢÷∏¡Ó
   HAL_UART_Transmit(&huart4,message,9,10);
+
 }

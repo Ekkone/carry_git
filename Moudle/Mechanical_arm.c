@@ -155,7 +155,7 @@ void StablePose(void)	//0
 	ax12a1(buff1[0],buff2);
 	ax12a2(buff1[1],buff2);
 	ax12a3(buff1[2],buff2);
-	ax12a4(buff1[3],buff2);
+//	ax12a4(buff1[3],buff2);
 //	ax12a5(buff1[4],buff2);
 
 }
@@ -267,3 +267,22 @@ void Get(void)   //5
 //	ax12a5(buff1[4],buff2);
 }
 
+/**
+	**************************************************************
+	** Descriptions: »úÐµ±ÛÉìÕ¹º¯Êý
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void StretchPose(void)   //6
+{
+	int *buff1 = angle[6];
+	int  buff2 = speed[6];
+	
+	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],buff2);
+//	ax12a5(buff1[4],buff2);
+}

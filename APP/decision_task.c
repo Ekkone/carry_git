@@ -18,9 +18,17 @@ void Decision_Task(void const * argument)
 {
   for(;;)
   {
-//    HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_14);
+		static uint8_t LED5_NUM = 0;
+		
+		if(LED5_NUM > 30)
+		{
+			HAL_GPIO_TogglePin(LED5_GPIO_Port,LED5_Pin);
+			LED5_NUM = 0;
+		}
+		
+		LED5_NUM++;
     
-    osDelay(500);
+    osDelay(10);
   }
 }
 

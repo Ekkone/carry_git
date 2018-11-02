@@ -142,7 +142,7 @@ void CAN_Fliter_Config(void)
 	
 	//filter config for can2
 	//can1(0-13),can2(14-27)
-	while(HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig) == HAL_OK)
+	while(HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig) != HAL_OK)
 	{
 		Error_Handler();
 	}

@@ -71,10 +71,13 @@ void MX_GPIO_Init(void)
 {
 
   /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOH_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	__HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
 
 }
 
@@ -83,15 +86,52 @@ void LED_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct;
   /* GPIO Ports Clock Enable */
-   __HAL_RCC_GPIOB_CLK_ENABLE();
-  /*Configure GPIO pin : PB14 */
-  GPIO_InitStruct.Pin = GPIO_PIN_14;
+	
+	/*up*/
+
+  /*Configure GPIO pin : LED1 */
+  GPIO_InitStruct.Pin = LED1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-  
-  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_14,GPIO_PIN_RESET);
+	
+  HAL_GPIO_Init(LED1_GPIO_Port, &GPIO_InitStruct);
+	
+	GPIO_InitStruct.Pin = LED2_Pin;
+  HAL_GPIO_Init(LED2_GPIO_Port, &GPIO_InitStruct);
+	
+	GPIO_InitStruct.Pin = LED3_Pin;
+	HAL_GPIO_Init(LED3_GPIO_Port, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = LED4_Pin;
+	HAL_GPIO_Init(LED4_GPIO_Port, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = LED5_Pin;
+	HAL_GPIO_Init(LED5_GPIO_Port, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = LED6_Pin;
+	HAL_GPIO_Init(LED6_GPIO_Port, &GPIO_InitStruct);
+
+}
+
+
+
+void EXIT_Iint(void)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+	/*Configure GPIO pins : PAPin PAPin */
+  GPIO_InitStruct.Pin = QTI1_Pin|QTI2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
 }
 /* USER CODE END 2 */
 

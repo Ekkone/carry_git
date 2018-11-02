@@ -16,11 +16,16 @@
 
 #if car_one
 
-#define	Set_AX11 ax12a1
-#define Set_AX6  ax12a2
+//#define	Set_AX11 ax12a1
+//#define Set_AX6  ax12a2
+//#define Set_AX8  ax12a3
+//#define Set_AX18 ax12a4
+
+#define Set_AX6  ax12a1
+#define Set_AX18 ax12a2
 #define Set_AX8  ax12a3
-#define Set_AX18 ax12a4
-	
+#define Set_AX11 ax12a4
+
 #endif
 
 #if car_two

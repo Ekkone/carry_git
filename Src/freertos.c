@@ -64,6 +64,8 @@ osThreadId decision_taskHandle;
 osThreadId location_taskHandle;
 osThreadId test_taskHandle;
 osThreadId display_taskHandle;
+osThreadId run_taskHandle;
+
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -77,6 +79,8 @@ extern void Decision_Task(void const * argument);
 extern void Location_Task(void const * argument);
 extern void Test_Task(void const * argument);
 extern void Display_Task(void const * argument);
+extern void Run_Task(void const * argument);
+
 /* USER CODE END FunctionPrototypes */
 
 /* Hook prototypes */
@@ -102,23 +106,26 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityBelowNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  osThreadDef(correct_task, Correct_Task, osPriorityHigh, 0, 128);
+  osThreadDef(run_task, Run_Task, osPriorityHigh, 0, 128);
+  run_taskHandle = osThreadCreate(osThread(run_task), NULL);
+	
+  osThreadDef(correct_task, Correct_Task, osPriorityNormal, 0, 128);
   correct_taskHandle = osThreadCreate(osThread(correct_task), NULL);
   
   osThreadDef(decision_task, Decision_Task, osPriorityHigh, 0, 128);
   decision_taskHandle = osThreadCreate(osThread(decision_task), NULL);
   
-  osThreadDef(location_task, Location_Task, osPriorityHigh, 0, 128);
+  osThreadDef(location_task, Location_Task, osPriorityAboveNormal, 0, 128);
   location_taskHandle = osThreadCreate(osThread(location_task), NULL);
   
-  osThreadDef(test_task, Test_Task, osPriorityHigh, 0, 128);
+  osThreadDef(test_task, Test_Task, osPriorityBelowNormal, 0, 128);
   test_taskHandle = osThreadCreate(osThread(test_task), NULL);
 
-  osThreadDef(display_task, Display_Task, osPriorityHigh, 0, 512);
+  osThreadDef(display_task, Display_Task, osPriorityNormal, 0, 512);
   display_taskHandle = osThreadCreate(osThread(display_task), NULL);
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */

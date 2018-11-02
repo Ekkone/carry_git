@@ -61,7 +61,7 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef        htim1; 
+TIM_HandleTypeDef        htim7; 
 uint32_t                 uwIncrementState = 0;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -83,13 +83,13 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   uint32_t              pFLatency;
   
   /*Configure the TIM1 IRQ priority */
-  HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, TickPriority ,0); 
+  HAL_NVIC_SetPriority(TIM7_IRQn, TickPriority ,0); 
   
   /* Enable the TIM1 global Interrupt */
-  HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn); 
+  HAL_NVIC_EnableIRQ(TIM7_IRQn); 
   
   /* Enable TIM1 clock */
-  __HAL_RCC_TIM1_CLK_ENABLE();
+  __HAL_RCC_TIM7_CLK_ENABLE();
   
   /* Get clock configuration */
   HAL_RCC_GetClockConfig(&clkconfig, &pFLatency);
@@ -101,7 +101,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   uwPrescalerValue = (uint32_t) ((uwTimclock / 1000000) - 1);
   
   /* Initialize TIM1 */
-  htim1.Instance = TIM1;
+  htim7.Instance = TIM7;
   
   /* Initialize TIMx peripheral as follow:
   + Period = [(TIM1CLK/1000) - 1]. to have a (1/1000) s time base.
@@ -109,14 +109,14 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
   + ClockDivision = 0
   + Counter direction = Up
   */
-  htim1.Init.Period = (1000000 / 1000) - 1;
-  htim1.Init.Prescaler = uwPrescalerValue;
-  htim1.Init.ClockDivision = 0;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  if(HAL_TIM_Base_Init(&htim1) == HAL_OK)
+  htim7.Init.Period = (1000000 / 1000) - 1;
+  htim7.Init.Prescaler = uwPrescalerValue;
+  htim7.Init.ClockDivision = 0;
+  htim7.Init.CounterMode = TIM_COUNTERMODE_UP;
+  if(HAL_TIM_Base_Init(&htim7) == HAL_OK)
   {
     /* Start the TIM time Base generation in interrupt mode */
-    return HAL_TIM_Base_Start_IT(&htim1);
+    return HAL_TIM_Base_Start_IT(&htim7);
   }
   
   /* Return function status */
@@ -132,7 +132,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority)
 void HAL_SuspendTick(void)
 {
   /* Disable TIM1 update Interrupt */
-  __HAL_TIM_DISABLE_IT(&htim1, TIM_IT_UPDATE);                                                  
+  __HAL_TIM_DISABLE_IT(&htim7, TIM_IT_UPDATE);                                                  
 }
 
 /**
@@ -144,7 +144,7 @@ void HAL_SuspendTick(void)
 void HAL_ResumeTick(void)
 {
   /* Enable TIM1 Update interrupt */
-  __HAL_TIM_ENABLE_IT(&htim1, TIM_IT_UPDATE);
+  __HAL_TIM_ENABLE_IT(&htim7, TIM_IT_UPDATE);
 }
 
 /**

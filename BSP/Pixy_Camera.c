@@ -1,6 +1,6 @@
 /**********************************************
 * @file    Pixy_Camera.c 
-* @author  ncurm
+* @author  NCURM
 * @version V1.0
 * @date    2015/12/11	
 * @brief   Pixy Camera¥¶¿Ì

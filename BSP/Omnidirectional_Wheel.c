@@ -25,6 +25,9 @@ void motor_move_setvmmps(float  wheel[4],float dstVmmps_X,float dstVmmps_Y,float
 		float  V_VALUE;
 		float  L_omni;
 	  
+		dstVmmps_X *= 0.866025;
+		dstVmmps_Y *= 0.5;
+	
 	  V_VALUE=sqrt(2)/2;
 	  L_omni=0.5*sqrt(2);//(a+b)/2
 	

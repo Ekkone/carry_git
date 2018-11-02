@@ -19,6 +19,8 @@ GM_25_type GM_25;
 #define SPEED 100
 #define X_DIRECTION 0
 #define Y_DIRECTION 1
+
+enum car_state Car_State = x_pos; 
 /* Private function prototypes -----------------------------------------------*/
 enum
 {
@@ -47,7 +49,17 @@ void Run_Task(void const * argument)
 	
   for(;;)
   {
+		static uint8_t LED2_NUM = 0;
 		
+		if(LED2_NUM > 30)
+		{
+			HAL_GPIO_TogglePin(LED2_GPIO_Port,LED2_Pin);
+			LED2_NUM = 0;
+		}
+		
+		LED2_NUM++;
+
+/*
    motor_move_setvmmps(wheel,GM_25_spd_set.dstVmmps_X,GM_25_spd_set.dstVmmps_Y,GM_25_spd_set.dstVmmps_W);
 
    for(int i=0;i<4;i++)
@@ -79,6 +91,7 @@ void Run_Task(void const * argument)
 			
 			
     LCD_Display_int(wheel[0],1,1);
+*/
     osDelay(5);
   }
 }
@@ -93,12 +106,12 @@ uint8_t Move_to(uint8_t num,uint8_t direction,uint16_t speed)
   {
     case X_DIRECTION:
           /*判断X方向*/
-          if(now_x - goal_x[num] > 0)
+          if(x_now - goal_x[num] > 0)
             Direction = X_Neg;
           else
             Direction = X_Pos;
           /*未到达指定X*/
-          if(now_x != goal_x[num])
+          if(x_now != goal_x[num])
           {
             GM_25_spd_set.dstVmmps_X = Direction * speed;
           }
@@ -115,12 +128,12 @@ uint8_t Move_to(uint8_t num,uint8_t direction,uint16_t speed)
           break;
     case Y_DIRECTION:
           /*判断Y方向*/
-          if(now_y - goal_y[num] > 0)
+          if(y_now - goal_y[num] > 0)
             Direction = Y_Neg;
           else
             Direction = Y_Pos;
           /*未到达指定Y*/
-          if(now_y != goal_y[num])
+          if(y_now != goal_y[num])
           {
             GM_25_spd_set.dstVmmps_Y = Direction * speed;
           }

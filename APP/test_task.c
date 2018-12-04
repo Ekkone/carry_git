@@ -1,5 +1,5 @@
 /*************************************************************************************
-*	@file			correct_task.c
+*	@file			test_task.c
 * @author	 	Ekko
 *	@version 	V1.0
 *	@date			2018/9/22
@@ -9,6 +9,7 @@
 #include "test_task.h"
 
 /* External variables --------------------------------------------------------*/
+volatile	uint8_t	Data_Updata_flag[6] = {0};
 
 /* Internal variables --------------------------------------------------------*/
 
@@ -16,22 +17,86 @@
 
 void Test_Task(void const * argument)
 {
-
-
-  for(;;)
+  
+	uint32_t NotifyValue;
+	tcs3200.get_flag = 1;tcs3200.updata_flag = 1;
+	for(;;)
   {
-		static uint8_t LED1_NUM = 0;
 		
-		if(LED1_NUM > 30)
+		NotifyValue = ulTaskNotifyTake(pdTRUE,portMAX_DELAY);
+		if(NotifyValue == 1)
 		{
-			HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);
-			LED1_NUM = 0;
-		}
-		
-		LED1_NUM++;
+			NotifyValue = 0;
+			
+			if(Data_Updata_flag[0] == 1)
+			{
+				//陀螺仪处理
+				taskENTER_CRITICAL();  //进入临界段
 
-    osDelay(10);
-  }
+				JY_Select();	
+				Data_Updata_flag[0] = 0;
+				
+				taskEXIT_CRITICAL();  //退出临界段
+
+			}
+			//陀螺仪数据监控
+			JY61_Frame();
+
+			if(Data_Updata_flag[1] == 1)
+			{
+				taskENTER_CRITICAL();  //进入临界段
+				
+				LightBand_IRHandler(LightBand1,&huart2);
+				Data_Updata_flag[1] = 0;
+			
+				taskEXIT_CRITICAL();  //退出临界段
+
+			}			
+			
+			if(Data_Updata_flag[2] == 1)
+			{
+				taskENTER_CRITICAL();  //进入临界段
+
+				//灯板2
+				LightBand_IRHandler(LightBand2,&huart3);
+				Data_Updata_flag[2] = 0;
+				
+				taskEXIT_CRITICAL();  //退出临界段
+			}			
+			
+			if(Data_Updata_flag[3] == 1)
+			{
+				//激光不用
+
+				//Data_Updata_flag[3] = 0;
+			}			
+			
+			if(Data_Updata_flag[4] == 1)
+			{
+				//二维码
+					QRcode_plan();
+				Data_Updata_flag[4] = 0;
+			}			
+			
+			//颜色传感器请求数据监控
+//			Color_RGB(Data_Updata_flag[5]);
+			
+//			if(Data_Updata_flag[5] == 1)
+//			{
+//				//颜色传感器
+//				taskENTER_CRITICAL();  //进入临界段
+
+////				Color_IRHandler();
+//				Data_Updata_flag[5] = 0;
+//				
+//				taskEXIT_CRITICAL();  //退出临界段
+
+//			}
+
+			
+//			CO_GetRGB();
+		}
+   }
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

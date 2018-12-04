@@ -1,59 +1,89 @@
 #include "LightBand.h"
-
+#include "string.h"
 
 CAN_TX LightBand_Tx;
 CAN_RX LightBand_Rx;
 
-struct lightband LB_1;
-struct lightband LB_2;
-struct lightband LB_3;
-struct lightband LB_4;
+lightband LB_1;
+lightband LB_2;
 
 
+lightband *LB;
 
 
-void LightBand_TRHandler(CAN_RX LightBand_Rx)
+/**
+	**************************************************************
+	** Descriptions:
+	** Input: 	
+  **						
+	**					
+	**					
+	** Output: NULL
+	**************************************************************
+**/
+
+int LightBand_IRHandler(uint8_t *buff,UART_HandleTypeDef *huart)
 {
-	
-	switch(LightBand_Rx.can_rx.StdId)
-	{
-		case 1: //id:1
-					{
-						LB_1.id = 1;
-						LB_1.distance = LightBand_Rx.data[0];
-						LB_1.direction =  LightBand_Rx.data[1];
-						LB_1.site = LightBand_Rx.data[3] << 8 | LightBand_Rx.data[2];
-					}
-		break;
-		case 2: //id:2
-					{
-			  		LB_2.id = 2;
-						LB_2.distance = LightBand_Rx.data[0];
-						LB_2.direction =  LightBand_Rx.data[1];
-						LB_2.site = LightBand_Rx.data[3] << 8 | LightBand_Rx.data[2];	
-					}
-		break;
-
-		case 3:	//id:3
-					{
-						LB_3.id = 3;
-						LB_3.distance = LightBand_Rx.data[0];
-						LB_3.direction =  LightBand_Rx.data[1];
-						LB_3.site = LightBand_Rx.data[3] << 8 | LightBand_Rx.data[2];						
-					}
-		break;
-
-		case 4:	//id:4
-					{
-						LB_4.id = 4;
-						LB_4.distance = LightBand_Rx.data[0];
-						LB_4.direction =  LightBand_Rx.data[1];
-						LB_4.site = LightBand_Rx.data[3] << 8 | LightBand_Rx.data[2];									
-					}
-		break;
-		default: ;
 		
+	 static uint8_t sum = 0;
+	
+	if(huart->Instance == USART2)
+	{
+		LB = &LB_1;
+	}
+	else 
+	{
+		LB = &LB_2;
 	}
 		
+	for(uint8_t i = 0;i < sizeofLB; i++)
+	{	
+		if(buff[i] == 0xff)
+		{
+	
+			//校验
+			sum = (uint8_t)(0xff + buff[i + 1] + buff[i + 2] + buff[i + 3] + buff[i + 4] + buff[i + 5] + buff[i + 6] + buff[i + 7] + buff[i + 8] + buff[i + 9]) + buff[i + 10] + buff[i + 11];
+			//数据更新标志位
+			if(sum == buff[i + 12])
+			{
+				
+				LB->site = buff[i + 1];
+				LB->offset = (buff[i + 2] << 8| buff[i + 3]) - 1000;
+				LB->senor0 = buff[i + 4] << 8 | buff[i + 5];
+				LB->senor1 = buff[i + 6] << 8	|	buff[i +7];
+				LB->senor2 = buff[i + 8] << 8 |	buff[i + 9];
+				LB->senor3 = buff[i + 10] << 8 | buff[i + 11];
 
+				LB->flag = 1;
+				//数据接收成功
+
+				return 3;
+			}
+			else
+			{
+				LB->flag = 0;
+
+				//数据校验不对
+				return 2;
+			}
+
+		}
+	
+	}
+
+	/******************/
+		return 1;
+}
+
+
+
+
+
+
+HAL_StatusTypeDef Send_LightBand(uint8_t id)
+{
+  static uint8_t data[3] = {0xff,0,0};
+  data[1] = id;
+  data[2] = 0xff + id;
+  return HAL_UART_Transmit(&huart2,data,3,5);
 }

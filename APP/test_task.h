@@ -13,7 +13,12 @@
 #include "cmsis_os.h"
 #include "AX-12A.h"
 #include "gpio.h"
-
+#include "bsp.h"
+#include "color.h"
+#include "QR_Code.h"
+#include "rbc_lcd.h"
+#include "LightBand.h"
+#include "communication.h"
 /* Private function prototypes -----------------------------------------------*/
 
 void Test_Task(void const * argument);

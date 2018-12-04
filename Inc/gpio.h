@@ -67,24 +67,35 @@
 #define QTI2_GPIO_Port  GPIOA
 #define QTI2_EXTI_IRQn  EXTI2_IRQn
 	 
-#define LED1_Pin 				GPIO_PIN_14
-#define	LED1_GPIO_Port	GPIOE
+#define LED1_Pin 				GPIO_PIN_13
+#define	LED1_GPIO_Port	GPIOB
 	 
-#define LED2_Pin 				GPIO_PIN_12
-#define	LED2_GPIO_Port	GPIOF
+#define LED2_Pin 				GPIO_PIN_15
+#define	LED2_GPIO_Port	GPIOE
 	 
-#define LED3_Pin 				GPIO_PIN_11
-#define	LED3_GPIO_Port	GPIOF
+#define LED3_Pin 				GPIO_PIN_12
+#define	LED3_GPIO_Port	GPIOE
 
-#define LED4_Pin 				GPIO_PIN_2
-#define	LED4_GPIO_Port	GPIOB
+#define LED4_Pin 				GPIO_PIN_12
+#define	LED4_GPIO_Port	GPIOF
 
-#define LED5_Pin 				GPIO_PIN_1
-#define	LED5_GPIO_Port	GPIOB
+#define LED5_Pin 				GPIO_PIN_11
+#define	LED5_GPIO_Port	GPIOF
 
-#define LED6_Pin 				GPIO_PIN_0
+#define LED6_Pin 				GPIO_PIN_2
 #define	LED6_GPIO_Port	GPIOB
 
+#define LED7_Pin 				GPIO_PIN_1
+#define	LED7_GPIO_Port	GPIOB
+
+#define LED8_Pin 				GPIO_PIN_0
+#define	LED8_GPIO_Port	GPIOB
+
+#define KEY1   				HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_0)
+#define KEY2   				HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_1)
+#define KEY3   				HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_2)
+#define KEY4   				HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_4)
+#define KEY5   				HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_4)
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
@@ -96,6 +107,7 @@ void MX_GPIO_Init(void);
 /* USER CODE BEGIN Prototypes */
 void LED_Init(void);
 void EXIT_Iint(void);
+void KEY_Init(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

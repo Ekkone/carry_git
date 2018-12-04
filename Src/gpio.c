@@ -78,7 +78,8 @@ void MX_GPIO_Init(void)
 	__HAL_RCC_GPIOE_CLK_ENABLE();
 	__HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
-
+	__HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOI_CLK_ENABLE();
 }
 
 /* USER CODE BEGIN 2 */
@@ -111,6 +112,15 @@ void LED_Init(void)
 
 	GPIO_InitStruct.Pin = LED6_Pin;
 	HAL_GPIO_Init(LED6_GPIO_Port, &GPIO_InitStruct);
+  
+  GPIO_InitStruct.Pin = LED7_Pin;
+	HAL_GPIO_Init(LED7_GPIO_Port, &GPIO_InitStruct);
+  
+  GPIO_InitStruct.Pin = LED7_Pin;
+	HAL_GPIO_Init(LED7_GPIO_Port, &GPIO_InitStruct);
+  
+  GPIO_InitStruct.Pin = LED8_Pin;
+	HAL_GPIO_Init(LED8_GPIO_Port, &GPIO_InitStruct);
 
 }
 
@@ -132,6 +142,29 @@ void EXIT_Iint(void)
   HAL_NVIC_SetPriority(EXTI2_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(EXTI2_IRQn);
 
+}
+
+void KEY_Init(void)
+{
+	GPIO_InitTypeDef GPIO_InitStruct;
+  /* GPIO Ports Clock Enable */
+
+  /*Configure GPIO pin : KEY0 KEY1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_4 ;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  
+  /*Configure GPIO pin : KEY0 KEY1 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4 ;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+	
 }
 /* USER CODE END 2 */
 

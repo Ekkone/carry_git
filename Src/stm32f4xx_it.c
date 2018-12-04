@@ -44,32 +44,41 @@
 #include "cmsis_os.h"
 #include "QR_Code.h"
 #include "AX-12A.h"
-
+#include "communication.h "
 /*Pixy变量*/
 uint8_t Re_Counter = 0;
 uint8_t ReSign_OK = 0;
-static uint8_t USART1_FLAG = 0;	//通信标志
 
 /*激光测距变量*/
 float Distance = 0;				 //距离
-uint8_t Laser_buff = 0;    //缓存
-
+uint8_t buff[20] = {0};    //缓存
+uint8_t mode = 0;
 /*二维码变量*/
 uint8_t QR_Buff[11] = {0};
 
+/*灯板变量*/
+uint8_t LightBand1[sizeofLB] = {0};
+uint8_t LightBand2[sizeofLB] = {0};
+//lightband *LB;
+/*颜色传感器变量*/
+uint8_t color_buff[54] = {0};
 /*任务通知使用任务句柄*/
 //osThreadId correct_taskHandle;
 //osThreadId decision_taskHandle;
-//osThreadId test_taskHandle;
+extern osThreadId test_taskHandle;
 //osThreadId display_taskHandle;
 extern osThreadId location_taskHandle;
 
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern UART_HandleTypeDef huart4;
-extern UART_HandleTypeDef huart5;
-extern UART_HandleTypeDef huart1;
+//DMA
+extern DMA_HandleTypeDef hdma_usart1_rx;
+extern DMA_HandleTypeDef hdma_usart2_rx;
+extern DMA_HandleTypeDef hdma_usart3_rx;
+extern DMA_HandleTypeDef hdma_usart4_rx;
+extern DMA_HandleTypeDef hdma_usart5_rx;
+extern DMA_HandleTypeDef hdma_usart6_rx;
 
 //编码器
 extern TIM_HandleTypeDef htim1;
@@ -80,11 +89,8 @@ extern TIM_HandleTypeDef htim7;
 extern TIM_HandleTypeDef htim8;
 extern TIM_HandleTypeDef htim9;
 
-//灯带
-extern CAN_HandleTypeDef hcan1;
-
-//二维码
-extern uint8_t way_color[3];
+//数据更新标志
+extern volatile	uint8_t	Data_Updata_flag[6];
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -108,11 +114,12 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+	static double count = 0;
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {
     /* USER CODE BEGIN W1_HardFault_IRQn 0 */
+		count++;
     /* USER CODE END W1_HardFault_IRQn 0 */
   }
   /* USER CODE BEGIN HardFault_IRQn 1 */
@@ -313,7 +320,7 @@ void TIM7_IRQHandler(void)
   /* USER CODE END TIM7_IRQn 1 */
 }
 
-void TIM9_IRQHandler(void)
+void TIM1_BRK_TIM9_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM9_IRQn 0 */
 
@@ -324,229 +331,154 @@ void TIM9_IRQHandler(void)
   /* USER CODE END TIM9_IRQn 1 */
 }
 
-/**
-* @brief This function handles USART1 global interrupt.
-*/
-void USART1_IRQHandler(void)
-{
-  /* USER CODE BEGIN USART1_IRQn 0 */
-  
-  /* USER CODE END USART1_IRQn 0 */
-  HAL_UART_IRQHandler(&huart1);
-  /* USER CODE BEGIN USART1_IRQn 1 */
 
-  /* USER CODE END USART1_IRQn 1 */
+void DMA2_Stream2_IRQHandler(void)
+{
+	/* USER CODE BEGIN DMA2_Stream2_IRQn 0 */
+	HAL_GPIO_TogglePin(LED1_GPIO_Port,LED1_Pin);
+	__HAL_DMA_DISABLE(&hdma_usart1_rx);
+  /* USER CODE END DMA2_Stream2_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream2_IRQn 1 */
+}
+/**
+* @brief This function handles DMA1 stream1 global interrupt.
+*/
+void DMA1_Stream0_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 0 */
+	HAL_GPIO_TogglePin(LED5_GPIO_Port,LED5_Pin);
+	__HAL_DMA_DISABLE(&hdma_usart5_rx);
+  /* USER CODE END DMA2_Stream2_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart5_rx);
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream2_IRQn 1 */
+}
+/**
+* @brief This function handles DMA1 stream1 global interrupt.
+*/
+void DMA1_Stream1_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 0 */
+	HAL_GPIO_TogglePin(LED3_GPIO_Port,LED3_Pin);
+	__HAL_DMA_DISABLE(&hdma_usart3_rx);
+  /* USER CODE END DMA2_Stream2_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart3_rx);
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream2_IRQn 1 */
+}
+/**
+* @brief This function handles DMA1 stream1 global interrupt.
+*/
+void DMA1_Stream2_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 0 */
+	HAL_GPIO_TogglePin(LED4_GPIO_Port,LED4_Pin);
+	//	__HAL_DMA_DISABLE(&hdma_usart4_rx);
+  /* USER CODE END DMA2_Stream2_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart4_rx);
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream2_IRQn 1 */
+}
+/**
+* @brief This function handles DMA1 stream1 global interrupt.
+*/
+void DMA1_Stream5_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 0 */
+	HAL_GPIO_TogglePin(LED2_GPIO_Port,LED2_Pin);
+	__HAL_DMA_DISABLE(&hdma_usart2_rx);
+  /* USER CODE END DMA2_Stream2_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart2_rx);
+  /* USER CODE BEGIN DMA2_Stream2_IRQn 1 */
+
+  /* USER CODE END DMA2_Stream2_IRQn 1 */
 }
 
-/**
-* @brief This function handles UART4 global interrupt.
-*/
-void UART4_IRQHandler(void)
-{
-  /* USER CODE BEGIN UART4_IRQn 0 */
-
-  /* USER CODE END UART4_IRQn 0 */
-  HAL_UART_IRQHandler(&huart4);
-  /* USER CODE BEGIN UART4_IRQn 1 */
-
-  /* USER CODE END UART4_IRQn 1 */
-}
-
-/**
-* @brief This function handles UART5 global interrupt.
-*/
-void UART5_IRQHandler(void)
-{
-  /* USER CODE BEGIN UART5_IRQn 0 */
-
-  /* USER CODE END UART5_IRQn 0 */
-  HAL_UART_IRQHandler(&huart5);
-  /* USER CODE BEGIN UART5_IRQn 1 */
-
-  /* USER CODE END UART5_IRQn 1 */
-}
-
-
-/**
-* @brief This function handles CAN1 RX0 interrupts.
-*/
-void CAN1_RX0_IRQHandler(void)
-{
-  /* USER CODE BEGIN CAN1_RX0_IRQn 0 */
-
-  /* USER CODE END CAN1_RX0_IRQn 0 */
-  HAL_CAN_IRQHandler(&hcan1);
-  /* USER CODE BEGIN CAN1_RX0_IRQn 1 */
-
-  /* USER CODE END CAN1_RX0_IRQn 1 */
-}
 
 
 /* USER CODE BEGIN 1 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if(huart->Instance == USART1)  //PIXY接受中断
+	static  BaseType_t  pxHigherPriorityTaskWoken;
+	
+	if(huart->Instance == USART1)				 //陀螺仪接收
+	{
+		Data_Updata_flag[0] = 1;
+		__HAL_DMA_SET_COUNTER(&hdma_usart1_rx,SizeofJY61);
+		__HAL_DMA_ENABLE(&hdma_usart1_rx);
+		vTaskNotifyGiveFromISR(test_taskHandle,&pxHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);	
+	}
+  else if(huart->Instance == USART2)  //灯板1接收
   {
-  	
-		switch(USART1_FLAG)
-		{
-			case 0:
-						{
-							//第一字节帧头
-							if((Pixy_Temp[0] == 0x55 || Pixy_Temp[0] == 0x56))
-							{
-								USART1_FLAG = 1; 
-								Re_Counter++;
-							}
-							else
-							{
-								//重新接收
-								USART1_FLAG = 0;
-								Re_Counter = 0;
-							}
-							
-						}
-			break;
-			case 1:
-						{
-							//第二字节帧头
-							if( Pixy_Temp[1] == 0xAA)
-							{
-								USART1_FLAG = 2;
-								Re_Counter++;
-							}else
-							{
-								//重新接收
-								USART1_FLAG = 0;
-								Re_Counter = 0;
-							}
-						}
-			break;
-			case 2:
-						{
-							//正常接收
-							Re_Counter++;
-							if(Re_Counter >= 14)
-							{
-									/* 单一色 1个：帧头为55 aa 55 aa
-									单一色 2个：面积大的先发，帧头为55 aa 55 aa  ，下一个帧头为55 aa
-									CC模式 1个：帧头为55 aa 56 aa
-									CC模式+单一模式 各1个：先发单一模式，帧头为55 aa 55 aa，后发CC模式，帧头为56 aa
-									CC模式 2个：帧头为55 aa 56 aa (此情况不准，两个标记会产生结合，角度几乎不对)			  
-									*/
-								
-									//单一色1个   15个数据
-									if((Pixy_Temp[2] == 0x55) && (Pixy_Temp[3] == 0xAA) && (Re_Counter == 16))
-									{
-										Re_Counter = 0;  //重新赋值，准备下一帧数据的接收
-										ReSign_OK = 0x01;
-										USART1_FLAG = 0;
-										
-									}
-									//单一色2个   13个数据
-									else if((Pixy_Temp[2] != 0x55) && (Pixy_Temp[2] != 0x56) && (Re_Counter == 14))
-									{
-										Re_Counter = 0;  //重新赋值，准备下一帧数据的接收
-										ReSign_OK = 0x02;
-										USART1_FLAG = 0;
-									}
-									/*处理数据*/
-									Pixy_Camera_Data(ReSign_OK);
-									//避免无效数据进入，浪费计算时间
-									ReSign_OK = 0;
-							 }
-							if(Re_Counter > 16)
-							{
-								USART1_FLAG = 0;
-								Re_Counter = 0;  //接受失败,重新赋值，准备下一帧数据的接收
-
-							}
-							
-
-						}
-			break;
-			default: ;	
+		
+		Data_Updata_flag[1] = 1;
+		__HAL_DMA_SET_COUNTER(&hdma_usart2_rx,sizeofLB);
+		__HAL_DMA_ENABLE(&hdma_usart2_rx);
+		vTaskNotifyGiveFromISR(test_taskHandle,&pxHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);	
 				
-		}
-			
-    HAL_UART_Receive_IT(&huart1,&Pixy_Temp[Re_Counter],1);
   }
-  else if(huart->Instance == UART4)  //激光测距接收中断
+	else if(huart->Instance == USART3)  //灯板2接收
+	{
+		
+		Data_Updata_flag[2] = 1;
+		__HAL_DMA_SET_COUNTER(&hdma_usart3_rx,sizeofLB);
+		__HAL_DMA_ENABLE(&hdma_usart3_rx);
+		vTaskNotifyGiveFromISR(test_taskHandle,&pxHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
+		
+	}
+  else if(huart->Instance == UART4)  //激光数据接收
   {
-    static uint8_t step = 0,high = 0,low = 0;
-    switch(step)
+    for(uint8_t i = 0;i < 15;i++)
     {
-      case 0:
-              if(Laser_buff == 0X5A)
-                  {
-                    step++;
-                    break;
-                  }
-              else break;
-      case 1:
-              if(Laser_buff == 0X5A)
-                {
-                  step++;
-                  break;
-                }
-              else break;
-      case 2:
-              if(Laser_buff == 0X15)
-                {
-                  step++;
-                  break;
-                }
-              else break;
-      case 3:
-              if(Laser_buff == 0X03)
-                {
-                  step++;
-                  break;
-                }
-              else break;
-      case 4:
-              high = Laser_buff;
-              step++;
-              break;
-      case 5:
-              low = Laser_buff;
-              step++;
-              break;
-      case 6:
-              if(Laser_buff == 0x03 || Laser_buff == 0x02 || Laser_buff == 0x01 || Laser_buff == 0x00)
-                {
-                  step++;
-                  break;
-                }
-              else break;
-      case 7:if(Laser_buff == ((0x5a + 0x5a + 0x15 +0x03 + high + low + 0x03) & 0xff))
-                {
-                  Distance = high << 8 | low;
-                  step = 0;
-                  break;
-                }
-              else break;
+      if((buff[i] == 0x5a) && (buff[i + 1] == 0x5a) && buff[i + 7] == ((0x5a + 0x5a + 0x18 + buff[i + 4] + buff[i +5] + buff[i +6]) & 0xff))
+      {
+        Distance = buff[i + 4] << 8 | buff[i + 5];
+        mode = buff[i + 6];
+      }
     }
-        
-    HAL_UART_Receive_IT(&huart4,&Laser_buff,1);
-    
+
  }
   else if(huart->Instance == UART5)  //二维码
   {
-    if(QR_Buff[0] == 0x02 && QR_Buff[1] == 0x00 && QR_Buff[2] == 0x00 && QR_Buff[3] == 0x01 &&\
-       QR_Buff[4] == 0x00 && QR_Buff[5] == 0x33 && QR_Buff[6] == 0x31)
-    {
-      way_color[0] = QR_Buff[7] - 30;
-      way_color[1] = QR_Buff[8] - 30;
-      way_color[2] = QR_Buff[9] - 30;
-    }
-    else
-    {
-      Get_QRcode();
-    }
-      HAL_UART_Receive_IT(&huart5,QR_Buff,11);      
+   
+		Data_Updata_flag[4] = 1;
+		__HAL_DMA_SET_COUNTER(&hdma_usart5_rx,10);
+		__HAL_DMA_ENABLE(&hdma_usart5_rx);
+		vTaskNotifyGiveFromISR(test_taskHandle,&pxHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
+		
+//    if(QR_Buff[0] == 0x02 && QR_Buff[1] == 0x00 && QR_Buff[2] == 0x00 && QR_Buff[3] == 0x01 &&
+//       QR_Buff[4] == 0x00 && QR_Buff[5] == 0x33 && QR_Buff[6] == 0x31)
+//    {
+//      way_color[0] = QR_Buff[7] - 30;
+//      way_color[1] = QR_Buff[8] - 30;
+//      way_color[2] = QR_Buff[9] - 30;
+//    }
+//    else
+//    {
+//      Get_QRcode();
+//    }
+//      HAL_UART_Receive_IT(&huart5,QR_Buff,11);      
   }
-  
+	else if(huart->Instance == USART6) //颜色传感器
+	{
+		
+		Data_Updata_flag[5] = 1;
+		__HAL_DMA_SET_COUNTER(&hdma_usart6_rx,54);
+		__HAL_DMA_ENABLE(&hdma_usart6_rx);
+		vTaskNotifyGiveFromISR(test_taskHandle,&pxHigherPriorityTaskWoken);
+		portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);	
+		
+	}
    
   
 }
@@ -562,18 +494,20 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
     /* Enable the UART Parity Error and Data Register not empty Interrupts */
     SET_BIT(huart->Instance->CR1, USART_CR1_PEIE | USART_CR1_RXNEIE);
   }
-}
+	else if(huart->Instance == USART2)
+  {
+      /* Enable the UART Error Interrupt: (Frame error, noise error, overrun error) */
+    SET_BIT(huart->Instance->CR3, USART_CR3_EIE);
 
+		
 
-void HAL_CAN_RxFifo0FullCallback(CAN_HandleTypeDef *hcan)
-{
-	if(hcan == &hcan1)
-	{
-		HAL_CAN_GetRxMessage(&hcan1,CAN_RX_FIFO0,&LightBand_Rx.can_rx,LightBand_Rx.data);
-		LightBand_TRHandler(LightBand_Rx);
+    /* Enable the UART Parity Error and Data Register not empty Interrupts */
+    SET_BIT(huart->Instance->CR1, USART_CR1_PEIE | USART_CR1_RXNEIE);
+	
+//		    HAL_UART_Receive_IT(&huart2,LightBand,10);
+
+		
 	}
-
-        
 }
 
 
@@ -597,45 +531,21 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
   }
   /* USER CODE BEGIN Callback 1 */
-	if(htim->Instance == TIM5)
+	if(htim->Instance == TIM9)
 	{
-		
+//		
 	  Motor_Count();
     
 		//计数清零
 		__HAL_TIM_SET_COUNTER(&htim2,0);
 		__HAL_TIM_SET_COUNTER(&htim3,0);
 		__HAL_TIM_SET_COUNTER(&htim4,0);
-		__HAL_TIM_SET_COUNTER(&htim9,0);
+		__HAL_TIM_SET_COUNTER(&htim5,0);
 		
 	}
   /* USER CODE END Callback 1 */
 }
 
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	BaseType_t pxHigherPriorityTaskWoken;
-	if(GPIO_Pin == GPIO_PIN_1)
-	{
-		Qti1_flag[4] = Qti1_flag[3];
-		Qti1_flag[3] = Qti1_flag[2];
-		Qti1_flag[2] = Qti1_flag[1];
-		Qti1_flag[1] = Qti1_flag[0];
-		Qti1_flag[0] = QTI1;
-	}
-	else if(GPIO_Pin == GPIO_PIN_2)
-	{
-		Qti2_flag[4] = Qti2_flag[3];
-		Qti2_flag[3] = Qti2_flag[2];
-		Qti2_flag[2] = Qti2_flag[1];
-		Qti2_flag[1] = Qti2_flag[0];
-		Qti2_flag[0] = QTI2;
-	}
-	//发送定位任务的任务通知
-	vTaskNotifyGiveFromISR(location_taskHandle,&pxHigherPriorityTaskWoken);
-	//进行任务切换
-	portYIELD_FROM_ISR(pxHigherPriorityTaskWoken);
-}
 
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

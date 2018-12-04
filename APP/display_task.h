@@ -14,12 +14,19 @@
 #include "rbc_lcd.h"
 #include "gpio.h"
 #include "Mechanical_arm.h"
+#include "decision_task.h"
 
 
 
 #include "LightBand.h"
 
-
+extern UART_HandleTypeDef huart4;
+extern UART_HandleTypeDef huart5;
+extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
+extern uint8_t call_message[4];
+extern uint32_t call_status;
 /* Private function prototypes -----------------------------------------------*/
 
 void Display_Task(void const * argument);

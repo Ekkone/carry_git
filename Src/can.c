@@ -140,7 +140,7 @@ void CAN_Fliter_Config(void)
 	sFilterConfig.FilterActivation = ENABLE;//¼¤»î¹ýÂËÆ÷
 	sFilterConfig.SlaveStartFilterBank = 0;
 	
-	//filter config for can2
+	//filter config for can1
 	//can1(0-13),can2(14-27)
 	while(HAL_CAN_ConfigFilter(&hcan1,&sFilterConfig) != HAL_OK)
 	{

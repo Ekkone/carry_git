@@ -135,11 +135,11 @@ float pid_calc(pid_t* pid, float get, float set){
     pid->get[NOW] = get;
     pid->set[NOW] = set;
     pid->err[NOW] = set - get;	//set - measure
-    ec = pid->err[NOW] - pid->err[LAST]; 
-  
-    p = FUZZY_Calc_Kp(pid->err[NOW],ec,pid->ec_max,pid->ec_max,pid->p);
-    i = FUZZY_Calc_Ki(pid->err[NOW],ec,pid->ec_max,pid->ec_max,pid->i);
-    d = FUZZY_Calc_Kd(pid->err[NOW],ec,pid->ec_max,pid->ec_max,pid->d);
+//    ec = pid->err[NOW] - pid->err[LAST]; 
+//  
+//    p = FUZZY_Calc_Kp(pid->err[NOW],ec,pid->ec_max,pid->ec_max,pid->p);
+//    i = FUZZY_Calc_Ki(pid->err[NOW],ec,pid->ec_max,pid->ec_max,pid->i);
+//    d = FUZZY_Calc_Kd(pid->err[NOW],ec,pid->ec_max,pid->ec_max,pid->d);
   
     if (pid->max_err != 0 && ABS(pid->err[NOW]) >  pid->max_err  )
 		return 0;
@@ -148,9 +148,9 @@ float pid_calc(pid_t* pid, float get, float set){
     
     if(pid->pid_mode == POSITION_PID) //位置式p
     {
-        pid->pout = p * pid->err[NOW];
-        pid->iout += i * pid->err[NOW];
-        pid->dout = d * (pid->err[NOW] - pid->err[LAST] );
+        pid->pout = pid->p * pid->err[NOW];
+        pid->iout += pid->i * pid->err[NOW];
+        pid->dout = pid->d * (pid->err[NOW] - pid->err[LAST] );
         abs_limit(&(pid->iout), pid->IntegralLimit);
         pid->pos_out = pid->pout + pid->iout + pid->dout;
         abs_limit(&(pid->pos_out), pid->MaxOutput);
@@ -158,9 +158,9 @@ float pid_calc(pid_t* pid, float get, float set){
     }
     else if(pid->pid_mode == DELTA_PID)//增量式P
     {
-        pid->pout = p * (pid->err[NOW] - pid->err[LAST]);
-        pid->iout = i * pid->err[NOW];
-        pid->dout = d * (pid->err[NOW] - 2*pid->err[LAST] + pid->err[LLAST]);
+        pid->pout = pid->p * (pid->err[NOW] - pid->err[LAST]);
+        pid->iout = pid->i * pid->err[NOW];
+        pid->dout = pid->d * (pid->err[NOW] - 2*pid->err[LAST] + pid->err[LLAST]);
         
         abs_limit(&(pid->iout), pid->IntegralLimit);
         pid->delta_u = pid->pout + pid->iout + pid->dout;

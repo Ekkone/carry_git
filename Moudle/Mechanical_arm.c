@@ -57,8 +57,8 @@
 /* 外部函数原型声明 ----------------------------------------------------------*/
 
 /* 内部变量 ------------------------------------------------------------------*/
-static int speed[7] = {0};	 //5种动作，每个动作中5个舵机都是一个速度
-static int angle[7][5] = {0};//5种动作，5个舵机
+static int speed[12] = {0};	 //5种动作，每个动作中5个舵机都是一个速度
+static int angle[12][6] = {0};//5种动作，5个舵机
 /* 函数原型声明 ----------------------------------------------------------*/
 
 
@@ -71,11 +71,12 @@ static int angle[7][5] = {0};//5种动作，5个舵机
 	** Output: NULL
 	**************************************************************
 **/
-void servo_set(float buff[7][6])
+void servo_set(float buff[12][6])
 {
-	for(uint8_t i = 0;i < 7;i++)
+	for(uint8_t i = 0;i < 12;i++)
 	{
-		speed[i] = (int)(buff[i][5] * RPM);
+    //speed[i] = 40;
+		speed[i] = (int)(buff[i][5] * 5);
 		for(uint8_t j = 0;j < 5;j++)
 		{
 			angle[i][j] = (int)(buff[i][j] * ANGLE);
@@ -138,7 +139,7 @@ void servo_change_speed(uint8_t id,float buff )
 	speed[id] =(int)(buff * RPM);	
 }
 
-
+#if car_one
 /**
 	**************************************************************
 	** Descriptions: 稳定姿态函数
@@ -147,7 +148,7 @@ void servo_change_speed(uint8_t id,float buff )
 	** Output: NULL
 	**************************************************************
 **/
-void StablePose(void)	//0
+void Ready_Get(void)	//0
 {
 	int *buff1 = angle[0];
 	int  buff2 = speed[0];
@@ -177,7 +178,7 @@ void GetMaterial(void)	//1
 	ax12a1(buff1[0],buff2);
 	ax12a2(buff1[1],buff2);
 	ax12a3(buff1[2],buff2);
-	ax12a4(buff1[3],buff2);
+//	ax12a4(buff1[3],buff2);
 //	ax12a5(buff1[4],buff2);
 
 }
@@ -199,7 +200,7 @@ void PutMaterial(void)	//2
 	ax12a1(buff1[0],buff2);
 	ax12a2(buff1[1],buff2);
 	ax12a3(buff1[2],buff2);
-	ax12a4(buff1[3],buff2);
+//	ax12a4(buff1[3],buff2);
 //	ax12a5(buff1[4],buff2);
 
 }
@@ -213,7 +214,7 @@ void PutMaterial(void)	//2
 	** Output: NULL
 	**************************************************************
 **/
-void MiddlePose(void)   //3
+void Ready_Put(void)   //3
 {
 	int *buff1 = angle[3];
 	int  buff2 = speed[3];
@@ -221,7 +222,7 @@ void MiddlePose(void)   //3
 	ax12a1(buff1[0],buff2);
 	ax12a2(buff1[1],buff2);
 	ax12a3(buff1[2],buff2);
-	ax12a4(buff1[3],buff2);
+//	ax12a4(buff1[3],buff2);
 //	ax12a5(buff1[4],buff2);
 }
 
@@ -239,10 +240,10 @@ void Open(void)   //4
 	int *buff1 = angle[4];
 	int  buff2 = speed[4];
 	
-	ax12a1(buff1[0],buff2);
-	ax12a2(buff1[1],buff2);
-	ax12a3(buff1[2],buff2);
-	ax12a4(buff1[3],buff2);
+//	ax12a1(buff1[0],buff2);
+//	ax12a2(buff1[1],buff2);
+//	ax12a3(buff1[2],buff2);
+  	ax12a4(buff1[3],buff2);
 //	ax12a5(buff1[4],buff2);
 }
 
@@ -260,9 +261,9 @@ void Get(void)   //5
 	int *buff1 = angle[5];
 	int  buff2 = speed[5];
 	
-	ax12a1(buff1[0],buff2);
-	ax12a2(buff1[1],buff2);
-	ax12a3(buff1[2],buff2);
+//  ax12a1(buff1[0],buff2);
+//	ax12a2(buff1[1],buff2);
+//	ax12a3(buff1[2],buff2);
 	ax12a4(buff1[3],buff2);
 //	ax12a5(buff1[4],buff2);
 }
@@ -275,7 +276,7 @@ void Get(void)   //5
 	** Output: NULL
 	**************************************************************
 **/
-void StretchPose(void)   //6
+void Get_QR(void)   //6
 {
 	int *buff1 = angle[6];
 	int  buff2 = speed[6];
@@ -286,3 +287,227 @@ void StretchPose(void)   //6
 	ax12a4(buff1[3],buff2);
 //	ax12a5(buff1[4],buff2);
 }
+#endif
+#if car_two
+/**
+	**************************************************************
+	** Descriptions: 稳定姿态函数
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void Ready_Get(void)	//0
+{
+	int *buff1 = angle[0];
+	int  buff2 = speed[0];
+	
+	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],buff2);
+	ax12a5(buff1[4],buff2);
+
+}
+void Ready_Get_left(void)	//0
+{
+	int *buff1 = angle[9];
+	int  buff2 = speed[9];
+	
+	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],buff2);
+	ax12a5(buff1[4],buff2);
+
+}
+void Ready_Get_right(void)	//0
+{
+	int *buff1 = angle[10];
+	int  buff2 = speed[10];
+	
+	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],buff2);
+	ax12a5(buff1[4],buff2);
+
+}
+
+/**
+	**************************************************************
+	** Descriptions: 抓取物块函数
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void Get_Material(void)	//1
+{
+	int *buff1 = angle[1];
+	int  buff2 = speed[1];
+	
+//	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],250);
+//	ax12a5(buff1[4],buff2);
+
+}
+void Get_Material_another(void)	//1
+{
+	int *buff1 = angle[11];
+	int  buff2 = speed[11];
+	
+//	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],250);
+//	ax12a5(buff1[4],buff2);
+
+}
+
+/**
+	**************************************************************
+	** Descriptions: 放下物块函数
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void Put_Material(void)	//2
+{
+	int *buff1 = angle[2];
+	int  buff2 = speed[2];
+	
+//	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],buff2);
+//	ax12a5(buff1[4],buff2);
+
+}
+
+
+/**
+	**************************************************************
+	** Descriptions: 中间姿态函数
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void Ready_Put(void)   //3
+{
+	int *buff1 = angle[3];
+	int  buff2 = speed[3];
+	
+	ax12a1(buff1[0],buff2);
+//	ax12a2(buff1[1],buff2);
+//	ax12a3(buff1[2],buff2);
+//	ax12a4(buff1[3],buff2);
+//	ax12a5(buff1[4],buff2);
+}
+
+
+/**
+	**************************************************************
+	** Descriptions: 放开爪子函数
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void Open(void)   //4
+{
+	int *buff1 = angle[4];
+	int  buff2 = speed[4];
+	
+//	ax12a1(buff1[0],buff2);
+//	ax12a2(buff1[1],buff2);
+//	ax12a3(buff1[2],buff2);
+//  	ax12a4(buff1[3],buff2);
+	ax12a5(buff1[4],buff2);
+}
+
+
+/**
+	**************************************************************
+	** Descriptions: 抓紧爪子函数
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void Get(void)   //5
+{
+	int *buff1 = angle[5];
+	int  buff2 = speed[5];
+	
+//  ax12a1(buff1[0],buff2);
+//	ax12a2(buff1[1],buff2);
+//	ax12a3(buff1[2],buff2);
+//	ax12a4(buff1[3],buff2);
+	ax12a5(buff1[4],buff2);
+}
+
+/**
+	**************************************************************
+	** Descriptions: 机械臂伸展函数
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void GetQRcode(void)   //6
+{
+	int *buff1 = angle[6];
+	int  buff2 = speed[6];
+	
+	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],buff2);
+	ax12a5(buff1[4],buff2);
+}
+/**
+	**************************************************************
+	** Descriptions: 稳定姿态函数
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void Hands_Up(void)	//0
+{
+	int *buff1 = angle[7];
+	int  buff2 = speed[7];
+	
+//	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],buff2);
+//	ax12a5(buff1[4],buff2);
+
+}
+/**
+	**************************************************************
+	** Descriptions: 稳定姿态函数
+	** Input:  NULL
+	**				
+	** Output: NULL
+	**************************************************************
+**/
+void See_Color(void)	//0
+{
+	int *buff1 = angle[8];
+	int  buff2 = speed[8];
+	
+	ax12a1(buff1[0],buff2);
+	ax12a2(buff1[1],buff2);
+	ax12a3(buff1[2],buff2);
+	ax12a4(buff1[3],buff2);
+	ax12a5(buff1[4],buff2);
+
+}
+#endif

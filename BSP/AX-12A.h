@@ -22,17 +22,18 @@
 //#define Set_AX18 ax12a4
 
 #define Set_AX6  ax12a1
-#define Set_AX18 ax12a2
-#define Set_AX8  ax12a3
-#define Set_AX11 ax12a4
+#define Set_AX2  ax12a2
+#define Set_AX18 ax12a3
+#define Set_AX8  ax12a4
 
 #endif
 
 #if car_two
-#define	Set_AX9  ax12a1
-#define Set_AX5  ax12a2
-#define Set_AX14 ax12a3
-#define Set_AX7  ax12a4
+#define	Set_AX14       ax12a1
+#define Set_AX11_down  ax12a2
+#define Set_AX9        ax12a3
+#define Set_AX7        ax12a4
+#define Set_AX11_up    ax12a5
 
 #endif
 
@@ -69,15 +70,17 @@ typedef struct
 
 void AX_Init(void);
 void uart_t(uint8_t data);
-void Set_AX11(uint16_t angle,uint16_t speed);
+/*CAR1*/
 void Set_AX6(uint16_t angle,uint16_t speed);
 void Set_AX8(uint16_t angle,uint16_t speed);
 void Set_AX18(uint16_t angle,uint16_t speed);
-void Set_AX9(uint16_t angle,uint16_t speed);
-void Set_AX5(uint16_t angle,uint16_t speed);
+void Set_AX2(uint16_t angle,uint16_t speed);
+/*CAR2*/
+void Set_AX11_down(uint16_t angle,uint16_t speed);
 void Set_AX14(uint16_t angle,uint16_t speed);
 void Set_AX7(uint16_t angle,uint16_t speed);
-
+void Set_AX9(uint16_t angle,uint16_t speed);
+void Set_AX11_up(uint16_t angle,uint16_t speed);
 
 
 

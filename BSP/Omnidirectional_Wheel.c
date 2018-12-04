@@ -25,11 +25,11 @@ void motor_move_setvmmps(float  wheel[4],float dstVmmps_X,float dstVmmps_Y,float
 		float  V_VALUE;
 		float  L_omni;
 	  
-		dstVmmps_X *= 0.866025;
-		dstVmmps_Y *= 0.5;
-	
-	  V_VALUE=sqrt(2)/2;
-	  L_omni=0.5*sqrt(2);//(a+b)/2
+//		dstVmmps_X *= 0.866025;
+//		dstVmmps_Y *= 0.5;
+//	
+	  V_VALUE=1;
+	  L_omni=1;//(a+b)/2
 	
 		wheel[0] = (-dstVmmps_X*V_VALUE + dstVmmps_Y*V_VALUE + dstVmmps_W*L_omni);
 		wheel[1] = (-(dstVmmps_X*V_VALUE + dstVmmps_Y*V_VALUE - dstVmmps_W*L_omni));

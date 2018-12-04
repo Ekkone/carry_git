@@ -50,6 +50,12 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "cmsis_os.h"
+#include "stm32f4xx_hal.h"
+#include "gpio.h"
+#include "string.h"
+#include "communication.h"
+#include "rbc_lcd.h"
+#include "LightBand.h"
 
 /* USER CODE BEGIN Includes */     
 
@@ -65,7 +71,8 @@ osThreadId location_taskHandle;
 osThreadId test_taskHandle;
 osThreadId display_taskHandle;
 osThreadId run_taskHandle;
-
+osThreadId start_taskHandle;
+osThreadId correct_taskHandle;
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
@@ -74,13 +81,14 @@ void StartDefaultTask(void const * argument);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* USER CODE BEGIN FunctionPrototypes */
-extern void Correct_Task(void const * argument);
+
 extern void Decision_Task(void const * argument);
 extern void Location_Task(void const * argument);
 extern void Test_Task(void const * argument);
 extern void Display_Task(void const * argument);
 extern void Run_Task(void const * argument);
-
+extern void Start_Task(void const * argument);
+extern void Correct_Task(void const * argument);
 /* USER CODE END FunctionPrototypes */
 
 /* Hook prototypes */
@@ -110,23 +118,20 @@ void MX_FREERTOS_Init(void) {
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
-  osThreadDef(run_task, Run_Task, osPriorityHigh, 0, 128);
-  run_taskHandle = osThreadCreate(osThread(run_task), NULL);
-	
-  osThreadDef(correct_task, Correct_Task, osPriorityNormal, 0, 128);
-  correct_taskHandle = osThreadCreate(osThread(correct_task), NULL);
   
-  osThreadDef(decision_task, Decision_Task, osPriorityHigh, 0, 128);
-  decision_taskHandle = osThreadCreate(osThread(decision_task), NULL);
-  
-  osThreadDef(location_task, Location_Task, osPriorityAboveNormal, 0, 128);
-  location_taskHandle = osThreadCreate(osThread(location_task), NULL);
-  
-  osThreadDef(test_task, Test_Task, osPriorityBelowNormal, 0, 128);
-  test_taskHandle = osThreadCreate(osThread(test_task), NULL);
+  osThreadDef(start_task,Start_Task, osPriorityHigh, 0, 256);
+  start_taskHandle = osThreadCreate(osThread(start_task), NULL);
+//	
+//	osThreadDef(display_task, Display_Task, osPriorityHigh, 0, 256);
+//	display_taskHandle = osThreadCreate(osThread(display_task), NULL);
 
-  osThreadDef(display_task, Display_Task, osPriorityNormal, 0, 512);
-  display_taskHandle = osThreadCreate(osThread(display_task), NULL);
+
+        osThreadDef(run_task, Run_Task, osPriorityHigh, 0, 256);
+        run_taskHandle = osThreadCreate(osThread(run_task), NULL);
+  osThreadDef(test_task, Test_Task, osPriorityHigh, 0, 128);
+  test_taskHandle = osThreadCreate(osThread(test_task), NULL);
+//  osThreadDef(run_task,Run_Task, osPriorityAboveNormal, 0, 256);
+//  run_taskHandle = osThreadCreate(osThread(run_task), NULL);
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -163,7 +168,115 @@ void StartDefaultTask(void const * argument)
 }
 
 /* USER CODE BEGIN Application */
-     
+void Start_Task(void const * argument)
+{
+	
+	uint32_t	led1_num = 0;
+	uint32_t sum = 0;
+	uint8_t color_num = 1;
+	extern float Distance;
+	extern uint8_t  color[3];
+	for(;;)
+	{
+		//陀螺仪数据展示
+		LCD_Display_float(jy61_yaw.JY_angle,1,1);
+		//灯板1总和展示
+		sum = LB_1.senor0 + LB_1.senor1 + LB_1.senor2 + LB_1.senor3;
+		LCD_Display_int(sum,1,2);
+		//灯板2总和展示
+		sum = LB_2.senor0 + LB_2.senor1 + LB_2.senor2 + LB_2.senor3;
+		LCD_Display_int(sum,10,2);		
+		//激光展示
+		LCD_Display_int(Distance,1,3);
+		
+		LCD_Display_int(color_num,2,1);
+		if(KEY3 == 0)
+    {
+      HAL_Delay(50);
+      if(KEY3 == 0)
+      {
+				color_num++;
+				if(color_num == 7)
+					color_num = 1;
+			}
+		}
+		
+		
+		
+		
+		//开始任务
+    if(KEY4 == 0)
+    {
+      HAL_Delay(50);
+      if(KEY4 == 0)
+      {
+				
+        switch(color_num)
+				{
+					case 1:
+					{
+						color[0] = 1;
+						color[1] = 2;
+						color[2] = 3;
+					}
+						break;
+					case 2:
+					{
+						color[0] = 1;
+						color[1] = 3;
+						color[2] = 2;
+					}
+						break;
+					case 3:
+					{
+						color[0] = 2;
+						color[1] = 1;
+						color[2] = 3;
+					}
+						break;
+					case 4:
+					{
+						color[0] = 2;
+						color[1] = 3;
+						color[2] = 1;
+					}
+						break;
+					case 5:
+					{
+						color[0] = 3;
+						color[1] = 1;
+						color[2] = 2;
+					}
+						break;
+					case 6:
+					{
+						color[0] = 3;
+						color[1] = 2;
+						color[2] = 1;
+					}
+						break;
+				}
+        osThreadDef(decision_task, Decision_Task, osPriorityHigh, 0, 256);
+        decision_taskHandle = osThreadCreate(osThread(decision_task), NULL);
+        
+				osThreadDef(correct_task, Correct_Task, osPriorityAboveNormal, 0, 256);
+        run_taskHandle = osThreadCreate(osThread(correct_task), NULL);
+				
+        osThreadDef(location_task, Location_Task, osPriorityRealtime, 0, 128);
+        location_taskHandle = osThreadCreate(osThread(location_task), NULL);                
+				
+        HAL_GPIO_TogglePin(LED2_GPIO_Port,LED2_Pin);
+				
+				vTaskSuspend(start_taskHandle);
+      }
+    
+			
+		}
+		
+		osDelay(10);
+		
+	} 
+}
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

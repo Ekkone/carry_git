@@ -7,13 +7,18 @@
 *************************************************************************************/
 /* Includes ------------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
+#include "usart.h"
+#include "string.h"
+#include "bsp.h"
 /* External variables --------------------------------------------------------*/
-extern UART_HandleTypeDef huart4;
+
 /* Internal variables --------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
 
-void Get_QRcode(void);
+void Open_QRcode(void);
+void Close_QRcode(void);
+void QRcode_plan(void);
 
 
 

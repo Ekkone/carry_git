@@ -88,31 +88,55 @@ void Friction_Wheel_Motor_Stop(void)
 **/
 void Motor_Count(void)
 {
+	static int8_t i;
+	static int16_t count1[4]={0,0,0,0};
+
 	
-	GM_25.motor_count[0]=(int16_t)(__HAL_TIM_GET_COUNTER(&htim2));
-	GM_25.motor_count[1]=(int16_t)(__HAL_TIM_GET_COUNTER(&htim3));	
-	GM_25.motor_count[2]=(int16_t)(__HAL_TIM_GET_COUNTER(&htim4));	
-	GM_25.motor_count[3]=(int16_t)(__HAL_TIM_GET_COUNTER(&htim9));
+	GM_25.motor_count1[0]=(int16_t)(__HAL_TIM_GET_COUNTER(&htim2));
+	GM_25.motor_count1[1]=(int16_t)(__HAL_TIM_GET_COUNTER(&htim3));
+	GM_25.motor_count1[2]=(int16_t)(__HAL_TIM_GET_COUNTER(&htim4));
+	GM_25.motor_count1[3]=(int16_t)(__HAL_TIM_GET_COUNTER(&htim5));
 	
-	//正反转处理
-		if(GM_25.motor_count[0]>5000)
+				if(GM_25.motor_count1[0]>5000)
 		{
-			GM_25.motor_count[0]=10000-GM_25.motor_count[0];
+			GM_25.motor_count1[0]=10000-GM_25.motor_count1[0];
 		}
 		
-			if(GM_25.motor_count[1]>5000)
+			if(GM_25.motor_count1[1]>5000)
 		{
-			GM_25.motor_count[1]=10000-GM_25.motor_count[1];
+			GM_25.motor_count1[1]=10000-GM_25.motor_count1[1];
 		}
 		
-			if(GM_25.motor_count[2]>5000)
+			if(GM_25.motor_count1[2]>5000)
 		{
-			GM_25.motor_count[2]=10000-GM_25.motor_count[2];
+			GM_25.motor_count1[2]=10000-GM_25.motor_count1[2];
 		}
 		
-			if(GM_25.motor_count[3]>5000)
+			if(GM_25.motor_count1[3]>5000)
 		{
-			GM_25.motor_count[3]=10000-GM_25.motor_count[3];
+			GM_25.motor_count1[3]=10000-GM_25.motor_count1[3];
 		}
+
+		count1[0]+=(GM_25.motor_count1[0]);
+	  count1[1]+=(GM_25.motor_count1[1]);
+	  count1[2]+=(GM_25.motor_count1[2]);
+	  count1[3]+=(GM_25.motor_count1[3]);
+		
+			if(i==5){
+		
+		GM_25.motor_count[0]=count1[0]/5;
+		GM_25.motor_count[1]=count1[1]/5;
+		GM_25.motor_count[2]=count1[2]/5;
+		GM_25.motor_count[3]=count1[3]/5;
+
+		
+		i=0;
+		count1[0]=0;
+		count1[1]=0;
+		count1[2]=0;
+		count1[3]=0;
+	}
+		
+	i++;
 		
 }

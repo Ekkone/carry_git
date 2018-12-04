@@ -1,0 +1,72 @@
+串口：
+
+USART1：   RX：PB7  (陀螺仪接收)   TX： PB6(机械臂发送)    DMA2_Stream5_channel4
+
+USART2:    RX: PD6  (灯板1接收)    TX： PD7(未使用)        DMA1_Stream5_channel4
+
+USART3:    RX: PB11 (灯板2接收)    TX： PB10               DMA1_Stream1_channel4
+
+UART4:     RX: PC11 (激光接收)     TX： PC10               DMA1_Stream2_channel4
+
+UART5:     RX: PD2  (二维码接收)   TX： PD2                DMA1_Stream0_channel4
+
+USART6：   RX：PG10 (颜色传感器)   TX： PG11               DMA2_Stream1_channel5
+
+
+
+定时器：
+
+TIM1：(电机输出 PWM模式)
+TIM1_CH1_Pin：PE9
+TIM1_CH2_Pin：PE11
+TIM1_CH3_Pin：PE13
+TIM1_CH4_Pin：PE14
+
+TIM8：(电机输出 PWM模式)
+TIM8_CH1_Pin：PC6
+TIM8_CH2_Pin：PC7
+TIM8_CH3_Pin：PC8
+TIM8_CH4_Pin：PC9
+
+//使用定时器2345 作为编码器
+TIM2:(编码器模式) 
+TIM2_CH1_Pin：PA5
+TIM2_CH2_Pin：PB3
+
+TIM3:(编码器模式)
+TIM3_CH1_Pin: PA6
+TIM3_CH2_Pin: PA7
+
+TIM4:(编码器模式)
+TIM4_CH1_Pin：PD12
+TIM4_CH2_Pin：PD13
+
+TIM5:(编码器模式)
+TIM5_CH1_Pin: PA0
+TIM5_CH2_Pin: PA1
+
+LED:
+LED1: PB13
+LED2: PE15
+LED3: PE12
+LED4: PF12
+LED5: PF11
+LED6: PB2
+LED7: PB1
+LED8: PB0
+
+KEY:
+KEY1：PC0
+KEY2：PC1
+KEY3：PC2
+KEY4：PA4
+KEY5：PC4
+
+LCD：
+RBC_LCD_CS：PF0
+RBC_LCD_SDA：PF1
+RBC_LCD_RS：PF2
+RBC_LCD_SCK：PF3
+RBC_LCD_RST：PF4
+
+

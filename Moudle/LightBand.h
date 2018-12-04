@@ -3,27 +3,36 @@
 
 #include "stm32f4xx.h"
 #include "can.h"
+#include "usart.h"
 
-struct	lightband
+#define sizeofLB 26
+
+
+typedef struct	
 {
-	uint8_t   id;
-	float 		site;
-	uint8_t 	distance;
-	uint8_t 	direction;
+	uint8_t		site;
+	float 		offset;
+	uint16_t 	senor0;
+	uint16_t  senor1;
+	uint16_t	senor2;
+  uint16_t  senor3;
+	uint32_t 	num;
+	uint8_t   flag;
+	
+}lightband;
 
-};
 
-extern struct lightband LB_1;
-extern struct lightband LB_2;
-extern struct lightband LB_3;
-extern struct lightband LB_4;
+
+extern lightband LB_1;
+extern lightband LB_2;
+
 
 
 extern CAN_TX LightBand_Tx;
 extern CAN_RX LightBand_Rx;
 
-void LightBand_TRHandler(CAN_RX LightBand_Rx);
-
+int LightBand_IRHandler(uint8_t *buff,UART_HandleTypeDef *huart);
+HAL_StatusTypeDef Send_LightBand(uint8_t id);
 
 #endif
 
